@@ -120,10 +120,10 @@ export const removeAdmin=async(req,res)=>{
             <text 
               x="0" 
               y="120" 
-                font-size="${clubLayout.fontSize || 135}" 
+                font-size="${clubLayout.fontSize || 30}" 
               font-weight="${clubLayout.fontWeight || "bold"}" 
               fill="${clubLayout.color || "#000"}" 
-              font-family="${clubLayout.fontFamily || "sans-serif"}"
+              font-family="${clubLayout.fontFamily || "Canva Sans"}"
             >
               ${name}
             </text>
@@ -137,10 +137,10 @@ export const removeAdmin=async(req,res)=>{
             <text 
               x="0" 
               y="120" 
-              font-size="${clubLayout.fontSize || 135}" 
+              font-size="${clubLayout.fontSize || 20}" 
               font-weight="${clubLayout.fontWeight || "bold"}" 
               fill="${clubLayout.color || "#000"}" 
-              font-family="${clubLayout.fontFamily || "sans-serif"}"
+              font-family="${clubLayout.fontFamily || "Canva Sans"}"
             >
               ${club}
             </text>
