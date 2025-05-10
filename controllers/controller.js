@@ -153,7 +153,7 @@ export const removeAdmin=async(req,res)=>{
           .composite([
             { input: resizedQRBuffer, top: y, left: x },
             { input: nameBuffer, top: nameLayout.y, left: nameLayout.x },
-            { input: clubLayoutBuffer, top: clubLayout.y, left: clubLayout.x }
+            // { input: clubLayoutBuffer, top: clubLayout.y, left: clubLayout.x }
           ])
           .toBuffer();
     
