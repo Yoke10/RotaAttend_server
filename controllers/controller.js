@@ -89,7 +89,7 @@ export const removeAdmin=async(req,res)=>{
     if (!nameLayout || !nameLayout.width || !nameLayout.height) {
       throw new Error("Invalid nameLayout object");
     }
-    if (!clubLayout || !clubLayout.width || !clubLayout.height) {
+    if (!clubLayout || !clubLayout.width || !clubLayout.height||!clubLayout.fontWeight) {
       throw new Error("Invalid clubLayout object");}
         const qrData = `${email}_${eventId}`;
         const qrCode = await QRCode.toDataURL(qrData); // base64 QR
@@ -120,10 +120,10 @@ export const removeAdmin=async(req,res)=>{
             <text 
               x="0" 
               y="120" 
-                font-size="${clubLayout.fontSize || 30}" 
-              font-weight="${clubLayout.fontWeight || "bold"}" 
-              fill="${clubLayout.color || "#000"}" 
-              font-family="${clubLayout.fontFamily || "Canva Sans"}"
+                font-size="${clubLayout.fontSize}px" 
+              font-weight="${clubLayout.fontWeight}" 
+              fill="${clubLayout.color}" 
+              font-family="${clubLayout.fontFamily }"
             >
               ${name}
             </text>
@@ -133,19 +133,22 @@ export const removeAdmin=async(req,res)=>{
     
         // Generate SVG text buffer for Club (similar to name)
         const svgClubText = `
-          <svg width="${clubLayout.width}" height="${clubLayout.height}" xmlns="http://www.w3.org/2000/svg">
-            <text 
-              x="0" 
-              y="120" 
-              font-size="${clubLayout.fontSize || 20}" 
-              font-weight="${clubLayout.fontWeight || "bold"}" 
-              fill="${clubLayout.color || "#000"}" 
-              font-family="${clubLayout.fontFamily || "Canva Sans"}"
-            >
-              ${club}
-            </text>
-          </svg>
-        `;
+  <svg width="${clubLayout.width}" height="${clubLayout.height}" xmlns="http://www.w3.org/2000/svg">
+    <text 
+      x="50%" 
+      y="50%" 
+      font-size="${clubLayout.fontSize}px" 
+      font-weight="${clubLayout.fontWeight}" 
+      fill="${clubLayout.color}" 
+      font-family="${clubLayout.fontFamily}"
+      text-anchor="middle"
+      dominant-baseline="middle"
+    >
+      ${club}
+    </text>
+  </svg>
+`;
+
         const clubLayoutBuffer = Buffer.from(svgClubText);
     
         // Composite QR code and text (name and club) on template with adjusted position and size
@@ -153,7 +156,7 @@ export const removeAdmin=async(req,res)=>{
           .composite([
             { input: resizedQRBuffer, top: y, left: x },
             { input: nameBuffer, top: nameLayout.y, left: nameLayout.x },
-            // { input: clubLayoutBuffer, top: clubLayout.y, left: clubLayout.x }
+            { input: clubLayoutBuffer, top: clubLayout.y, left: clubLayout.x }
           ])
           .toBuffer();
     
@@ -190,6 +193,8 @@ export const bulkRegisterUsers = async (req, res) => {
   
       console.log(height);
      console.log(nameLayout);
+     console.log(clubLayout);
+
     
       // Save the template once before the loop starts
       const templateBuffer = Buffer.from(template.split(',')[1], 'base64');
