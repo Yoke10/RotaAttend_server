@@ -189,17 +189,16 @@ const clubLayoutBuffer = Buffer.from(svgClubText);
             { input: clubLayoutBuffer, top: clubLayout.y, left: clubLayout.x }
           ])
           .toBuffer();
-    
+      const event =await Event.findById(eventId);
         // Send email with embedded image
         await transporter.sendMail({
-          from: "RotractClub",
+          from: event.from,
           to: email,
-          subject: "Your Event QR Code",
-          html: `<p>Hello ${name || "Participant"},</p>
-                 <p>Here is your event QR code on the template:</p>`,
+          subject:event.subject ,
+          html: event.html,
           attachments: [
             {
-              filename: 'final.png',
+              filename: 'pass.png',
               content: finalImageBuffer,
               cid: 'qrcodeimg',
             },
@@ -395,6 +394,21 @@ export const removeAdminEvent = async (req, res) => {
     const updatedEvent = await Event.findById(id);
 
     res.status(200).json({ message: "Admin removed", event: updatedEvent });
+  } catch (error) {
+    console.error("Error removing admin:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+export const updateEmailContent = async (req, res) => {
+  const {from,subject,htmlContent,eventId} = req.body;
+
+  try {
+     const event =await Event.findByIdAndUpdate(eventId,{
+      from:from,
+      subject:subject,
+      html:htmlContent
+     })
+     res.status(200).json(event);
   } catch (error) {
     console.error("Error removing admin:", error);
     res.status(500).json({ error: "Server error" });

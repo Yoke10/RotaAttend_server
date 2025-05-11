@@ -25,6 +25,21 @@ const eventSchema = new mongoose.Schema({
       match: /.+\@.+\..+/,
     },
   ],
+  from:{
+    type:String,
+    default:"RotractClub"
+  },
+  subject:{
+    type:String,
+    default:"Your Event QR Code"
+
+  },
+  html:{
+    type:String,
+    default:"<p>Hello ${name ||Participant}"
+
+  },
+  
 }, {
   timestamps: true
 });
