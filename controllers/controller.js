@@ -205,6 +205,11 @@ const clubLayoutBuffer = Buffer.from(svgClubText);
             },
           ],
         });
+
+        await User.updateOne(
+  { email, "registrations.eventId": eventId },
+  { $set: { "registrations.$.emailstatus": true } }
+);
     
         return { email, status: "success" };
       } catch (err) {
@@ -238,6 +243,7 @@ export const bulkRegisterUsers = async (req, res) => {
           results.push(result);
         } catch (err) {
           results.push({ email: userData.email, status: "error", error: err.message });
+          return res.status(202).json({"eror":err.message})
         }
       }
     
@@ -372,5 +378,25 @@ export const getUsersByEventId = async (req, res) => {
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ message: "Server error", error });
+  }
+};
+export const removeAdminEvent = async (req, res) => {
+  const { email, id } = req.body;
+
+  try {
+    const result = await Event.updateOne(
+      { _id: id },
+      { $pull: { admins: email } }
+    );
+
+
+  
+
+    const updatedEvent = await Event.findById(id);
+
+    res.status(200).json({ message: "Admin removed", event: updatedEvent });
+  } catch (error) {
+    console.error("Error removing admin:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
