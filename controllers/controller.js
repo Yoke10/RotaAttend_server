@@ -76,7 +76,24 @@ export const removeAdmin=async(req,res)=>{
       },
     });
   
-    
+    const wrapText = (text, maxCharsPerLine) => {
+  const words = text.split(' ');
+  const lines = [];
+  let currentLine = '';
+
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+    if (testLine.length <= maxCharsPerLine) {
+      currentLine = testLine;
+    } else {
+      lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+  return lines;
+};
+
     export const createOrUpdateUser = async (userData, templatePath, x, y, width, height, nameLayout, clubLayout) => {
       try {
         const { email, name, club, eventId } = userData;
@@ -115,41 +132,54 @@ export const removeAdmin=async(req,res)=>{
           .toBuffer();
     
         // Generate SVG text buffer for Name
-        const svgNameText = `
-          <svg width="${nameLayout.width}" height="${nameLayout.height}" xmlns="http://www.w3.org/2000/svg">
-            <text 
-              x="0" 
-              y="120" 
-                font-size="${clubLayout.fontSize}px" 
-              font-weight="${clubLayout.fontWeight}" 
-              fill="${clubLayout.color}" 
-              font-family="${clubLayout.fontFamily }"
-            >
-              ${name}
-            </text>
-          </svg>
-        `;
-        const nameBuffer = Buffer.from(svgNameText);
-    
-        // Generate SVG text buffer for Club (similar to name)
-        const svgClubText = `
-  <svg width="${clubLayout.width}" height="${clubLayout.height}" xmlns="http://www.w3.org/2000/svg">
-    <text 
-      x="50%" 
-      y="50%" 
-      font-size="${clubLayout.fontSize}px" 
-      font-weight="${clubLayout.fontWeight}" 
-      fill="${clubLayout.color}" 
-      font-family="${clubLayout.fontFamily}"
-      text-anchor="middle"
-      dominant-baseline="middle"
-    >
-      ${club}
-    </text>
+       const maxNameCharsPerLine = 20; // adjust if needed
+const nameLines = wrapText(name, maxNameCharsPerLine);
+
+const svgNameText = `
+  <svg width="${nameLayout.width}" height="${nameLayout.height}" xmlns="http://www.w3.org/2000/svg">
+    ${nameLines.map((line, i) => `
+      <text 
+        x="50%" 
+        y="${40 + i * nameLayout.fontSize * 1.2}" 
+        font-size="${nameLayout.fontSize}px" 
+        font-weight="${nameLayout.fontWeight}" 
+        fill="${nameLayout.color}" 
+        font-family="${nameLayout.fontFamily}" 
+        text-anchor="middle"
+        dominant-baseline="middle"
+      >
+        ${line}
+      </text>
+    `).join('')}
   </svg>
 `;
+const nameBuffer = Buffer.from(svgNameText);
 
-        const clubLayoutBuffer = Buffer.from(svgClubText);
+    
+        // Generate SVG text buffer for Club (similar to name)
+        const maxClubCharsPerLine = 20; // adjust as needed
+const clubLines = wrapText(club, maxClubCharsPerLine);
+
+const svgClubText = `
+  <svg width="${clubLayout.width}" height="${clubLayout.height}" xmlns="http://www.w3.org/2000/svg">
+    ${clubLines.map((line, i) => `
+      <text 
+        x="50%" 
+        y="${40 + i * clubLayout.fontSize * 1.2}" 
+        font-size="${clubLayout.fontSize}px" 
+        font-weight="${clubLayout.fontWeight}" 
+        fill="${clubLayout.color}" 
+        font-family="${clubLayout.fontFamily}" 
+        text-anchor="middle"
+        dominant-baseline="middle"
+      >
+        ${line}
+      </text>
+    `).join('')}
+  </svg>
+`;
+const clubLayoutBuffer = Buffer.from(svgClubText);
+
     
         // Composite QR code and text (name and club) on template with adjusted position and size
         const finalImageBuffer = await sharp(templatePath)
