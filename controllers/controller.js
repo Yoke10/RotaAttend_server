@@ -414,3 +414,15 @@ export const updateEmailContent = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+export const deleteEvent = async (req, res) => {
+  const {eventId} = req.body;
+
+  try {
+     const event =await Event.findByIdAndDelete(eventId);
+     res.status(200).json(event);
+  } catch (error) {
+    console.error("Error removing admin:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
