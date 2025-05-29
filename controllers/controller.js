@@ -132,7 +132,7 @@ export const removeAdmin=async(req,res)=>{
           .toBuffer();
     
         // Generate SVG text buffer for Name
-       const maxNameCharsPerLine = 20; // adjust if needed
+       const maxNameCharsPerLine = 40; // adjust if needed
 const nameLines = wrapText(name, maxNameCharsPerLine);
 
 const svgNameText = `
@@ -157,7 +157,7 @@ const nameBuffer = Buffer.from(svgNameText);
 
     
         // Generate SVG text buffer for Club (similar to name)
-        const maxClubCharsPerLine = 20; // adjust as needed
+        const maxClubCharsPerLine = 40; // adjust as needed
 const clubLines = wrapText(club, maxClubCharsPerLine);
 
 const svgClubText = `
